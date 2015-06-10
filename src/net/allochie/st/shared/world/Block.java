@@ -1,5 +1,7 @@
 package net.allochie.st.shared.world;
 
+import java.util.HashMap;
+
 import net.allochie.st.shared.render.ITexture;
 import net.allochie.st.shared.render.ITextureProvider;
 
@@ -11,14 +13,14 @@ import net.allochie.st.shared.render.ITextureProvider;
  */
 public abstract class Block {
 
+	private static final HashMap<Integer, Block> blockTypes = new HashMap<Integer, Block>();
+
 	public static Block getBlockByType(int type) {
-		// TODO Auto-generated method stub
-		return null;
+		return blockTypes.get(type);
 	}
 
 	public static int getTypeOfBlock(Block block) {
-		// TODO Auto-generated method stub
-		return 0;
+		return block.blockid;
 	}
 
 	/** The block ID */
@@ -26,6 +28,7 @@ public abstract class Block {
 
 	public Block(int blockid) {
 		this.blockid = blockid;
+		Block.blockTypes.put(blockid, this);
 	}
 
 	public abstract void initializeTextures(ITextureProvider provider);
