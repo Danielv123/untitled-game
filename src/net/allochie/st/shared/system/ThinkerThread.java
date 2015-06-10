@@ -2,7 +2,7 @@ package net.allochie.st.shared.system;
 
 import java.util.ArrayList;
 
-public class TickThread {
+public class ThinkerThread {
 
 	private static class BeatThread extends Thread {
 		private final boolean isServer;
@@ -46,7 +46,7 @@ public class TickThread {
 
 	private BeatThread thread;
 
-	public TickThread() {
+	public ThinkerThread() {
 	}
 
 	public void startThread(boolean server) {

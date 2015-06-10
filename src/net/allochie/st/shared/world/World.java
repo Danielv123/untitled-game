@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.allochie.st.shared.math.Vector2;
+import net.allochie.st.shared.system.IThink;
 import net.allochie.st.shared.world.provider.ChunkProvider;
 
-public class World implements IWorldAccess {
+public class World implements IWorldAccess, IThink {
 
 	public static final int defaultChunkWidth = 32;
 	public static final int defaultChunkHeight = 256;
@@ -27,9 +28,11 @@ public class World implements IWorldAccess {
 		provider.setWorld(this);
 	}
 
+	@Override
 	public void thinkClient() {
 	}
 
+	@Override
 	public void thinkServer() {
 	}
 
