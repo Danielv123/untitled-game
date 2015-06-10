@@ -2,23 +2,36 @@ package net.allochie.st.shared.world;
 
 import java.util.List;
 
+import net.allochie.st.shared.math.Vector2;
 import net.allochie.st.shared.world.provider.ChunkProvider;
 
 public class World implements IWorldAccess {
 
-	private int worldHeight;
-	private int worldWidth;
+	protected int worldHeight;
+	protected int worldWidth;
 
 	private List<Chunk> chunks;
 	private ChunkProvider provider;
 
-	public World() {
+	public World(ChunkProvider provider) {
+		this.provider = provider;
+		provider.setWorld(this);
 	}
 
 	public void thinkClient() {
 	}
 
 	public void thinkServer() {
+	}
+
+	public ChunkCoord getChunkCoordsForBlockCoords(int x, int y) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Vector2 getBlockCoordsInChunk(ChunkCoord coord, int bx, int by) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	public Chunk getChunkForBlockCoords(int x, int y) {
@@ -34,7 +47,8 @@ public class World implements IWorldAccess {
 
 	@Override
 	public Block getBlockInWorld(int x, int y) {
-		// TODO Auto-generated method stub
+		Chunk chunk = getChunkForBlockCoords(x, y);
+		// TODO Access chunk to get block
 		return null;
 	}
 
