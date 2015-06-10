@@ -1,0 +1,5 @@
+# Ignore all sorts of stuff
+bin/
+run/
+.classpath
+.project
