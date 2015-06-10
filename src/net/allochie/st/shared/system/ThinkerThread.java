@@ -12,6 +12,8 @@ public class ThinkerThread {
 		private final ArrayList<IThink> inThinkers = new ArrayList<IThink>();
 
 		public BeatThread(boolean isServer) {
+			super();
+			setDaemon(true);
 			this.isServer = isServer;
 		}
 
