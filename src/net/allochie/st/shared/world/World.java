@@ -6,10 +6,19 @@ import net.allochie.st.shared.world.provider.ChunkProvider;
 
 public class World implements IWorldAccess {
 
+	private int worldHeight;
+	private int worldWidth;
+
 	private List<Chunk> chunks;
 	private ChunkProvider provider;
 
 	public World() {
+	}
+
+	public void thinkClient() {
+	}
+
+	public void thinkServer() {
 	}
 
 	@Override
