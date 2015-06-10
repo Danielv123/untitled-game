@@ -11,6 +11,16 @@ import net.allochie.st.shared.render.ITextureProvider;
  */
 public abstract class Block {
 
+	public static Block getBlockByType(int type) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static int getTypeOfBlock(Block block) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 	/** The block ID */
 	public final int blockid;
 

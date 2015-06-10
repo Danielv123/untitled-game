@@ -8,6 +8,7 @@ import java.util.List;
 import net.allochie.st.shared.math.Vector2;
 import net.allochie.st.shared.world.Chunk;
 import net.allochie.st.shared.world.World;
+import net.allochie.st.shared.world.provider.ChunkProvider;
 
 public class ClientWorld extends World {
 
@@ -15,16 +16,17 @@ public class ClientWorld extends World {
 	private List<Chunk> dirtyChunks;
 	private DirtyChunkSorter dirtyChunkSorter;
 
-	public ClientWorld(ClientGame client) {
-		super();
+	public ClientWorld(ClientGame client, ChunkProvider provider) {
+		super(provider);
 		this.client = client;
+		this.isServerWorld = false;
 		dirtyChunks = new ArrayList<Chunk>();
 		dirtyChunkSorter = new DirtyChunkSorter(client.getViewport());
 	}
 
 	@Override
 	public void markBlockForUpdate(int x, int y) {
-		Chunk chunk = getChunkForBlockCoords(x, y);
+		Chunk chunk = getChunkFromBlockCoords(x, y);
 		if (!dirtyChunks.contains(chunk))
 			dirtyChunks.add(chunk);
 	}

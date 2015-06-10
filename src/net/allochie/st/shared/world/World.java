@@ -7,6 +7,8 @@ import net.allochie.st.shared.world.provider.ChunkProvider;
 
 public class World implements IWorldAccess {
 
+	protected boolean isServerWorld;
+
 	protected int worldHeight;
 	protected int worldWidth;
 
@@ -15,6 +17,7 @@ public class World implements IWorldAccess {
 
 	public World(ChunkProvider provider) {
 		this.provider = provider;
+		this.isServerWorld = true;
 		provider.setWorld(this);
 	}
 
@@ -34,28 +37,44 @@ public class World implements IWorldAccess {
 		return null;
 	}
 
-	public Chunk getChunkForBlockCoords(int x, int y) {
-		// TODO Auto-generated method stub
-		return null;
+	public Chunk getChunkFromBlockCoords(int x, int y) {
+		return getChunkFromCoords(getChunkCoordsForBlockCoords(x, y));
+	}
+
+	public Chunk getChunkFromCoords(ChunkCoord coords) {
+		for (Chunk chunk : chunks)
+			if (chunk.getPosition().equals(coords))
+				return chunk;
+		Chunk zz = provider.getChunkForCoords(coords);
+		if (zz != null)
+			chunks.add(zz);
+		return zz;
 	}
 
 	@Override
 	public void setBlockInWorld(int x, int y, Block block, int data) {
-		// TODO Auto-generated method stub
-
+		ChunkCoord coord = getChunkCoordsForBlockCoords(x, y);
+		Chunk chunk = getChunkFromCoords(coord);
+		Vector2 blockCoords = getBlockCoordsInChunk(coord, x, y);
+		boolean update = chunk.setBlock(blockCoords, block, data);
+		if (update)
+			markBlockForUpdate(x, y);
 	}
 
 	@Override
 	public Block getBlockInWorld(int x, int y) {
-		Chunk chunk = getChunkForBlockCoords(x, y);
-		// TODO Access chunk to get block
-		return null;
+		ChunkCoord coord = getChunkCoordsForBlockCoords(x, y);
+		Chunk chunk = getChunkFromCoords(coord);
+		Vector2 blockCoords = getBlockCoordsInChunk(coord, x, y);
+		return chunk.getBlock(blockCoords);
 	}
 
 	@Override
 	public int getBlockDataInWorld(int x, int y) {
-		// TODO Auto-generated method stub
-		return 0;
+		ChunkCoord coord = getChunkCoordsForBlockCoords(x, y);
+		Chunk chunk = getChunkFromCoords(coord);
+		Vector2 blockCoords = getBlockCoordsInChunk(coord, x, y);
+		return chunk.getBlockData(blockCoords);
 	}
 
 	@Override
