@@ -1,5 +1,8 @@
 package net.allochie.st.shared.world;
 
+import net.allochie.st.shared.render.ITexture;
+import net.allochie.st.shared.render.ITextureProvider;
+
 /**
  * A block in the game.
  * 
@@ -14,5 +17,9 @@ public abstract class Block {
 	public Block(int blockid) {
 		this.blockid = blockid;
 	}
+
+	public abstract void initializeTextures(ITextureProvider provider);
+
+	public abstract ITexture getRenderTexture(IWorldAccess world, int x, int y);
 
 }
