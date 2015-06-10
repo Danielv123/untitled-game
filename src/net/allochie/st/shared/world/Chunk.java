@@ -7,9 +7,22 @@ import net.allochie.st.shared.math.Vector2;
 public class Chunk {
 
 	private ChunkCoord position;
+
+	private int width, height;
 	private int[][] blocks;
 	private int[][] blockData;
 	private List<Tile> tiles;
+
+	public Chunk(int width, int height) {
+		this.width = width;
+		this.height = height;
+		this.blocks = new int[width][height];
+		this.blockData = new int[width][height];
+	}
+
+	public void resize(int newWidth, int newHeight) {
+		// TODO Auto-generated method stub
+	}
 
 	public ChunkCoord getPosition() {
 		return position;

@@ -7,10 +7,15 @@ import net.allochie.st.shared.world.provider.ChunkProvider;
 
 public class World implements IWorldAccess {
 
+	public static final int defaultChunkWidth = 32;
+	public static final int defaultChunkHeight = 256;
+
 	protected boolean isServerWorld;
 
 	protected int worldHeight;
 	protected int worldWidth;
+	protected int chunkWidth = defaultChunkWidth;
+	protected int chunkHeight = defaultChunkHeight;
 
 	private List<Chunk> chunks;
 	private ChunkProvider provider;
@@ -28,13 +33,12 @@ public class World implements IWorldAccess {
 	}
 
 	public ChunkCoord getChunkCoordsForBlockCoords(int x, int y) {
-		// TODO Auto-generated method stub
-		return null;
+		return new ChunkCoord((int) Math.floor(x / (double) chunkWidth),
+				(int) Math.floor(y / (double) chunkHeight));
 	}
 
 	public Vector2 getBlockCoordsInChunk(ChunkCoord coord, int bx, int by) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Vector2(bx - coord.x, by - coord.y);
 	}
 
 	public Chunk getChunkFromBlockCoords(int x, int y) {
