@@ -5,18 +5,21 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import net.allochie.st.shared.math.Vector2;
 import net.allochie.st.shared.world.Chunk;
 import net.allochie.st.shared.world.World;
 
 public class ClientWorld extends World {
 
+	private ClientGame client;
 	private List<Chunk> dirtyChunks;
 	private DirtyChunkSorter dirtyChunkSorter;
 
-	public ClientWorld() {
+	public ClientWorld(ClientGame client) {
 		super();
+		this.client = client;
 		dirtyChunks = new ArrayList<Chunk>();
-		dirtyChunkSorter = new DirtyChunkSorter();
+		dirtyChunkSorter = new DirtyChunkSorter(client.getViewport());
 	}
 
 	@Override
@@ -25,12 +28,24 @@ public class ClientWorld extends World {
 	}
 
 	private static class DirtyChunkSorter implements Comparator<Chunk> {
+		private final ClientViewport viewport;
+
+		public DirtyChunkSorter(ClientViewport viewport) {
+			this.viewport = viewport;
+		}
+
 		@Override
 		public int compare(Chunk chunk, Chunk farChunk) {
-			// TODO Check the viewport here, figure out which chunk is
-			// "closer" to the viewport. Return 0 if they're equidistant,
-			// return -1 if farChunk closer, return 1 if chunk closer.
-			return 0;
+			Vector2 middle = viewport.findMiddle();
+			Vector2 aChunk = chunk.getPosition().toVector2();
+			Vector2 aFarChunk = farChunk.getPosition().toVector2();
+			double dz0 = middle.sub(aChunk).mag();
+			double dz1 = middle.sub(aFarChunk).mag();
+			if (dz0 == dz1)
+				return 0;
+			if (dz0 > dz1)
+				return -1;
+			return 1;
 		}
 	}
 

@@ -7,5 +7,7 @@ public class Chunk {
 	private ChunkCoord position;
 	private int[][] blocks;
 	private List<Tile> tiles;
+	
+	public ChunkCoord getPosition() { return position; }
 
 }
