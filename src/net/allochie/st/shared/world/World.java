@@ -36,4 +36,10 @@ public class World implements IWorldAccess {
 
 	}
 
+	@Override
+	public Tile getBlockTile(int x, int y) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

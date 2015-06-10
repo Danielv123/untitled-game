@@ -8,6 +8,8 @@ public interface IWorldAccess {
 
 	public int getBlockDataInWorld(int x, int y);
 
+	public Tile getBlockTile(int x, int y);
+
 	public void markBlockForUpdate(int x, int y);
 
 }
