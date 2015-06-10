@@ -41,7 +41,7 @@ public class World implements IWorldAccess {
 
 	@Override
 	public void markBlockForUpdate(int x, int y) {
-		// TODO Auto-generated method stub
+		// TODO Send change to client
 
 	}
 
