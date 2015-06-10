@@ -1,5 +1,6 @@
 package net.allochie.st.shared.world;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.allochie.st.shared.math.Vector2;
@@ -17,7 +18,7 @@ public class World implements IWorldAccess {
 	protected int chunkWidth = defaultChunkWidth;
 	protected int chunkHeight = defaultChunkHeight;
 
-	private List<Chunk> chunks;
+	private List<Chunk> chunks = new ArrayList<Chunk>();
 	private ChunkProvider provider;
 
 	public World(ChunkProvider provider) {
