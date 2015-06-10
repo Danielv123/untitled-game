@@ -24,7 +24,9 @@ public class ClientWorld extends World {
 
 	@Override
 	public void markBlockForUpdate(int x, int y) {
-		// TODO: Find chunk, mark chunk dirty
+		Chunk chunk = getChunkForBlockCoords(x, y);
+		if (!dirtyChunks.contains(chunk))
+			dirtyChunks.add(chunk);
 	}
 
 	private static class DirtyChunkSorter implements Comparator<Chunk> {
@@ -57,6 +59,8 @@ public class ClientWorld extends World {
 	private void thinkClientReRenderChunks() {
 		if (dirtyChunks.size() > 0) {
 			Collections.sort(dirtyChunks, dirtyChunkSorter);
+			// TODO: dirtyChunks is now sorted from close -> far,
+			// so we can re-render the closest chunks to a vbo here
 		}
 	}
 

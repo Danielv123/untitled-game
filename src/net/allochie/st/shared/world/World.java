@@ -21,6 +21,11 @@ public class World implements IWorldAccess {
 	public void thinkServer() {
 	}
 
+	public Chunk getChunkForBlockCoords(int x, int y) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	@Override
 	public void setBlockInWorld(int x, int y, Block block, int data) {
 		// TODO Auto-generated method stub
