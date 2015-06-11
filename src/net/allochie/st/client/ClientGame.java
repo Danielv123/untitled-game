@@ -1,16 +1,22 @@
 package net.allochie.st.client;
 
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 
+import org.joml.Matrix4f;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
+import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import org.lwjgl.glfw.GLFWvidmode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
 
+import net.allochie.st.client.render.DrawToTextureBuffer;
+import net.allochie.st.client.render.GLStatic;
 import net.allochie.st.shared.system.ThinkerThread;
 
 public class ClientGame {
@@ -19,7 +25,9 @@ public class ClientGame {
 	private ClientWorld worldCache;
 	private ThinkerThread thinkThread;
 
+	private GLContext glContext;
 	private GLFWErrorCallback glfwErrorCallback;
+	private GLFWWindowSizeCallback glfwSizeCallback;
 	private GLFWKeyCallback glfwKeyboard;
 	private GLFWMouseButtonCallback glfwMouse;
 	private long glfwHWindow;
@@ -33,6 +41,16 @@ public class ClientGame {
 
 	public ClientViewport getViewport() {
 		return viewport;
+	}
+
+	public void poll(String label) {
+		try {
+			glContext.checkGLError();
+		} catch (Throwable t) {
+			System.out.println("error: " + label);
+			t.printStackTrace();
+			System.exit(9001);
+		}
 	}
 
 	private void init() {
@@ -68,6 +86,13 @@ public class ClientGame {
 			}
 		});
 
+		GLFW.glfwSetWindowSizeCallback(glfwHWindow, glfwSizeCallback = new GLFWWindowSizeCallback() {
+			@Override
+			public void invoke(long window, int w, int h) {
+				// TODO Auto-generated method stub
+			}
+		});
+
 		ByteBuffer vidmode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
 		GLFW.glfwSetWindowPos(glfwHWindow, (GLFWvidmode.width(vidmode) - WIDTH) / 2,
 				(GLFWvidmode.height(vidmode) - HEIGHT) / 2);
@@ -76,13 +101,73 @@ public class ClientGame {
 		GLFW.glfwShowWindow(glfwHWindow);
 	}
 
+	private void resizeApplication(int width, int height) {
+		if (height == 0)
+			height = 1;
+		float aspect = (float) width / (float) height;
+		GL11.glViewport(0, 0, width, height);
+		GLStatic.glPerspective(45.0f, aspect, 0.01f, 100.0f);
+		GLStatic.glLookAt(5.0f, 5.0f, 5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+	}
+
 	private void loop() {
-		GLContext.createFromCurrent();
-		GL11.glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+		glContext = GLContext.createFromCurrent();
+		resizeApplication(800, 600);
+
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glShadeModel(GL11.GL_SMOOTH);
+		GL11.glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+		GL11.glClearDepth(1.0);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glDepthFunc(GL11.GL_LEQUAL);
+		GL11.glEnable(GL11.GL_ALPHA_TEST);
+		GL11.glAlphaFunc(GL11.GL_GREATER, 0.0001F);
+		GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glCullFace(GL11.GL_BACK);
+		GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT, GL11.GL_NICEST);
+
+		DrawToTextureBuffer buffer = new DrawToTextureBuffer(800, 600);
+
+		float frame = 0;
+
 		while (GLFW.glfwWindowShouldClose(glfwHWindow) == GL11.GL_FALSE) {
+			poll("render doFrame");
+
+			GL11.glClearColor(0.33f, 0.33f, 0.33f, 1.0f);
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+
+			buffer.enter();
+			poll("render mountBuffer");
+			GL11.glPushMatrix();
+			GL11.glClearColor(0.66f, 0.66f, 0.66f, 1.0f);
+			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+			GL11.glLoadIdentity();
+			GLStatic.glLookAt(5.0f, 5.0f, 5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+			GLStatic.glWriteColorCube();
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
+			GL11.glPopMatrix();
+			poll("render closeBuffer");
+			buffer.exit();
+
+			GL11.glColor3f(1.0f, 1.0f, 1.0f);
+			frame++;
+
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, buffer.texture);
+			GL11.glPushMatrix();
+			GL11.glRotatef(frame, 0.0f, 1.0f, 0.0f);
+			GLStatic.glWriteWall();
+			GL11.glPopMatrix();
+
+			GL11.glPushMatrix();
+			GL11.glRotatef(-frame, 0.0f, 1.0f, 0.0f);
+			GLStatic.glWriteCube();
+			GL11.glPopMatrix();
+			poll("render doneFrame");
+
 			GLFW.glfwSwapBuffers(glfwHWindow);
 			GLFW.glfwPollEvents();
+			poll("render doneAllFrame");
 		}
 	}
 
