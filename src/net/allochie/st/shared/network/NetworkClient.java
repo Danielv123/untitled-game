@@ -12,8 +12,7 @@ public class NetworkClient {
 	Bootstrap b = new Bootstrap();
 
 	public NetworkClient(String host, int port) {
-		b.group(group).channel(NioSocketChannel.class)
-				.handler(new NetworkClientConnectionInitializer());
+		b.group(group).channel(NioSocketChannel.class).handler(new NetworkClientConnectionInitializer());
 		try {
 			Channel ch = b.connect(host, port).sync().channel();
 

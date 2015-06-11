@@ -6,6 +6,7 @@ import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
+import org.lwjgl.glfw.GLFWMouseButtonCallback;
 import org.lwjgl.glfw.GLFWvidmode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
@@ -18,9 +19,10 @@ public class ClientGame {
 	private ClientWorld worldCache;
 	private ThinkerThread thinkThread;
 
-	private GLFWErrorCallback errorCallback;
-	private GLFWKeyCallback keyCallback;
-	private long window;
+	private GLFWErrorCallback glfwErrorCallback;
+	private GLFWKeyCallback glfwKeyboard;
+	private GLFWMouseButtonCallback glfwMouse;
+	private long glfwHWindow;
 
 	public ClientGame() {
 		this.thinkThread = new ThinkerThread();
@@ -34,8 +36,7 @@ public class ClientGame {
 	}
 
 	private void init() {
-		GLFW.glfwSetErrorCallback(errorCallback = Callbacks
-				.errorCallbackPrint(System.err));
+		GLFW.glfwSetErrorCallback(glfwErrorCallback = Callbacks.errorCallbackPrint(System.err));
 
 		if (GLFW.glfwInit() != GL11.GL_TRUE)
 			throw new IllegalStateException("Unable to initialize GLFW");
@@ -44,37 +45,43 @@ public class ClientGame {
 		GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GL11.GL_FALSE);
 		GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GL11.GL_TRUE);
 
-		int WIDTH = 300;
-		int HEIGHT = 300;
+		int WIDTH = 800;
+		int HEIGHT = 600;
 
-		window = GLFW.glfwCreateWindow(WIDTH, HEIGHT, "Hello World!", 0, 0);
-		if (window == 0)
+		glfwHWindow = GLFW.glfwCreateWindow(WIDTH, HEIGHT, "Hello World!", 0, 0);
+		if (glfwHWindow == 0)
 			throw new RuntimeException("Failed to create the GLFW window");
 
-		GLFW.glfwSetKeyCallback(window, keyCallback = new GLFWKeyCallback() {
+		GLFW.glfwSetKeyCallback(glfwHWindow, glfwKeyboard = new GLFWKeyCallback() {
 			@Override
-			public void invoke(long window, int key, int scancode, int action,
-					int mods) {
+			public void invoke(long window, int key, int scancode, int action, int mods) {
 				if (key == GLFW.GLFW_KEY_ESCAPE && action == GLFW.GLFW_RELEASE)
 					GLFW.glfwSetWindowShouldClose(window, GL11.GL_TRUE);
 			}
 		});
 
-		ByteBuffer vidmode = GLFW
-				.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
-		GLFW.glfwSetWindowPos(window, (GLFWvidmode.width(vidmode) - WIDTH) / 2,
+		GLFW.glfwSetMouseButtonCallback(glfwHWindow, glfwMouse = new GLFWMouseButtonCallback() {
+			@Override
+			public void invoke(long window, int arg1, int arg2, int arg3) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+
+		ByteBuffer vidmode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
+		GLFW.glfwSetWindowPos(glfwHWindow, (GLFWvidmode.width(vidmode) - WIDTH) / 2,
 				(GLFWvidmode.height(vidmode) - HEIGHT) / 2);
-		GLFW.glfwMakeContextCurrent(window);
+		GLFW.glfwMakeContextCurrent(glfwHWindow);
 		GLFW.glfwSwapInterval(1);
-		GLFW.glfwShowWindow(window);
+		GLFW.glfwShowWindow(glfwHWindow);
 	}
 
 	private void loop() {
 		GLContext.createFromCurrent();
 		GL11.glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
-		while (GLFW.glfwWindowShouldClose(window) == GL11.GL_FALSE) {
+		while (GLFW.glfwWindowShouldClose(glfwHWindow) == GL11.GL_FALSE) {
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-			GLFW.glfwSwapBuffers(window);
+			GLFW.glfwSwapBuffers(glfwHWindow);
 			GLFW.glfwPollEvents();
 		}
 	}

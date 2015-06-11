@@ -37,8 +37,7 @@ public class World implements IWorldAccess, IThink {
 	}
 
 	public ChunkCoord getChunkCoordsForBlockCoords(int x, int y) {
-		return new ChunkCoord((int) Math.floor(x / (double) chunkWidth),
-				(int) Math.floor(y / (double) chunkHeight));
+		return new ChunkCoord((int) Math.floor(x / (double) chunkWidth), (int) Math.floor(y / (double) chunkHeight));
 	}
 
 	public Vector2 getBlockCoordsInChunk(ChunkCoord coord, int bx, int by) {

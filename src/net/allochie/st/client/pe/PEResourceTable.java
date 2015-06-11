@@ -68,22 +68,18 @@ public class PEResourceTable {
 		return (Short[]) typed.keySet().toArray(new Short[0]);
 	}
 
-	public InputStream getResourceStream(short resourceType, short resourceId)
-			throws FileNotFoundException {
+	public InputStream getResourceStream(short resourceType, short resourceId) throws FileNotFoundException {
 		Resource rsrc = resourceMap.get(resourceType).get(resourceId);
 		if (rsrc == null)
-			throw new FileNotFoundException("No resource " + resourceId
-					+ " under type " + resourceType);
+			throw new FileNotFoundException("No resource " + resourceId + " under type " + resourceType);
 		ByteArrayInputStream stream = new ByteArrayInputStream(rsrc.data);
 		return stream;
 	}
 
-	public short getResourceType(short resourceType, short resourceId)
-			throws FileNotFoundException {
+	public short getResourceType(short resourceType, short resourceId) throws FileNotFoundException {
 		Resource rsrc = resourceMap.get(resourceType).get(resourceId);
 		if (rsrc == null)
-			throw new FileNotFoundException("No resource " + resourceId
-					+ " under type " + resourceType);
+			throw new FileNotFoundException("No resource " + resourceId + " under type " + resourceType);
 		return (short) rsrc.type;
 	}
 
@@ -128,8 +124,7 @@ public class PEResourceTable {
 				short id = streamShort(file); // file idx
 				file.skipBytes(4); // skip reserved dword
 
-				Resource r = new Resource(type, id, offset, length,
-						new byte[length]);
+				Resource r = new Resource(type, id, offset, length, new byte[length]);
 
 				long ptr = file.getFilePointer(); // where now?
 				file.seek(r.offset); // go to file

@@ -16,5 +16,5 @@ public class NetworkServerConnectionHandler extends ChannelInboundHandlerAdapter
 		cause.printStackTrace();
 		ctx.close();
 	}
-	
+
 }

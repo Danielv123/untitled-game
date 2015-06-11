@@ -26,8 +26,7 @@ public class PEResourceExtractor {
 				ResourceType nameType = ResourceType.typeof(type);
 				String namefile;
 				if (nameType == ResourceType.UNKNOWN)
-					namefile = nameType.name() + "/" + type + "_" + id + "."
-							+ nameType.ext;
+					namefile = nameType.name() + "/" + type + "_" + id + "." + nameType.ext;
 				else
 					namefile = nameType.name() + "/" + id + "." + nameType.ext;
 				File which = new File("binary/src/" + namefile);
@@ -41,8 +40,7 @@ public class PEResourceExtractor {
 		}
 	}
 
-	private void passthroughStandard(InputStream in, OutputStream out)
-			throws IOException {
+	private void passthroughStandard(InputStream in, OutputStream out) throws IOException {
 		byte[] buffer = new byte[1024];
 		int len;
 		while ((len = in.read(buffer)) != -1)
