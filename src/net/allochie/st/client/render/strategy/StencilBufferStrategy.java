@@ -1,11 +1,13 @@
-package net.allochie.st.client.render;
+package net.allochie.st.client.render.strategy;
+
+import net.allochie.st.client.render.IRenderContext;
+import net.allochie.st.client.render.IRenderStrategy;
 
 import org.lwjgl.opengl.EXTFramebufferObject;
 import org.lwjgl.opengl.GL11;
-
 import org.lwjgl.opengl.ARBFramebufferObject;
 
-public class DrawToTextureBuffer {
+public class StencilBufferStrategy implements IRenderStrategy {
 	public int texture;
 	public int fbo;
 	public int depth;
@@ -13,7 +15,7 @@ public class DrawToTextureBuffer {
 	private int virtual_width;
 	private int virtual_height;
 
-	public DrawToTextureBuffer(int w, int h) {
+	public StencilBufferStrategy(int w, int h) {
 		this.fbo = EXTFramebufferObject.glGenFramebuffersEXT();
 		this.texture = GL11.glGenTextures();
 		this.depth = EXTFramebufferObject.glGenRenderbuffersEXT();
@@ -36,12 +38,14 @@ public class DrawToTextureBuffer {
 
 	}
 
-	public void enter() {
+	@Override
+	public void enter(IRenderContext ctx) {
 		EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, fbo);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 	}
 
-	public void exit() {
+	@Override
+	public void exit(IRenderContext ctx) {
 		EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, 0);
 	}
 
@@ -66,7 +70,8 @@ public class DrawToTextureBuffer {
 		return virtual_height;
 	}
 
-	public void dispose() {
+	@Override
+	public void dispose(IRenderContext ctx) {
 		try {
 			EXTFramebufferObject.glDeleteFramebuffersEXT(fbo);
 			GL11.glDeleteTextures(texture);

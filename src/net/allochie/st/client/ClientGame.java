@@ -15,11 +15,12 @@ import org.lwjgl.glfw.GLFWvidmode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
 
-import net.allochie.st.client.render.DrawToTextureBuffer;
 import net.allochie.st.client.render.GLStatic;
+import net.allochie.st.client.render.IRenderContext;
+import net.allochie.st.client.render.strategy.StencilBufferStrategy;
 import net.allochie.st.shared.system.ThinkerThread;
 
-public class ClientGame {
+public class ClientGame implements IRenderContext {
 
 	private ClientViewport viewport;
 	private ClientWorld worldCache;
@@ -43,11 +44,12 @@ public class ClientGame {
 		return viewport;
 	}
 
+	@Override
 	public void poll(String label) {
 		try {
 			glContext.checkGLError();
 		} catch (Throwable t) {
-			System.out.println("error: " + label);
+			System.out.println("OpenGL error detected: " + label);
 			t.printStackTrace();
 			System.exit(9001);
 		}
@@ -126,7 +128,7 @@ public class ClientGame {
 		GL11.glCullFace(GL11.GL_BACK);
 		GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT, GL11.GL_NICEST);
 
-		DrawToTextureBuffer buffer = new DrawToTextureBuffer(800, 600);
+		StencilBufferStrategy buffer = new StencilBufferStrategy(800, 600);
 
 		float frame = 0;
 
@@ -136,7 +138,7 @@ public class ClientGame {
 			GL11.glClearColor(0.33f, 0.33f, 0.33f, 1.0f);
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
-			buffer.enter();
+			buffer.enter(this);
 			poll("render mountBuffer");
 			GL11.glPushMatrix();
 			GL11.glClearColor(0.66f, 0.66f, 0.66f, 1.0f);
@@ -148,7 +150,7 @@ public class ClientGame {
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 			GL11.glPopMatrix();
 			poll("render closeBuffer");
-			buffer.exit();
+			buffer.exit(this);
 
 			GL11.glColor3f(1.0f, 1.0f, 1.0f);
 			frame++;
