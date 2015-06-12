@@ -21,7 +21,7 @@ public class ClientWorld extends World {
 		this.client = client;
 		this.isServerWorld = false;
 		dirtyChunks = new ArrayList<Chunk>();
-		dirtyChunkSorter = new DirtyChunkSorter(client.getViewport());
+		dirtyChunkSorter = new DirtyChunkSorter(client.viewport);
 	}
 
 	@Override

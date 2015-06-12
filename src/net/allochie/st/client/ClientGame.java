@@ -17,14 +17,17 @@ import net.allochie.st.client.glfw.MouseButtonCallbackImpl;
 import net.allochie.st.client.glfw.WindowSizeCallbackImpl;
 import net.allochie.st.client.render.GLStatic;
 import net.allochie.st.client.render.IRenderContext;
+import net.allochie.st.client.render.RenderDispatcher;
+import net.allochie.st.client.screens.IScreen;
 import net.allochie.st.shared.system.ThinkerThread;
 
 public class ClientGame implements IRenderContext {
 
+	public IScreen gameScreen;
 	public ClientViewport viewport;
 	public ClientWorld worldCache;
 	public ThinkerThread thinkThread;
-	public RenderDispatcher renderer;
+	public RenderDispatcher renderer = new RenderDispatcher();
 
 	public GLContext glContext;
 	public GLFWErrorCallback glfwErrorCallback;
@@ -38,10 +41,6 @@ public class ClientGame implements IRenderContext {
 		thinkThread.startThread(false);
 		init();
 		loop();
-	}
-
-	public ClientViewport getViewport() {
-		return viewport;
 	}
 
 	@Override
@@ -80,6 +79,7 @@ public class ClientGame implements IRenderContext {
 		GLFW.glfwSetWindowPos(glfwHWindow, (GLFWvidmode.width(vidmode) - WIDTH) / 2,
 				(GLFWvidmode.height(vidmode) - HEIGHT) / 2);
 		GLFW.glfwMakeContextCurrent(glfwHWindow);
+		GLFW.glfwSetInputMode(glfwHWindow, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
 		GLFW.glfwSwapInterval(1);
 		GLFW.glfwShowWindow(glfwHWindow);
 	}
@@ -87,33 +87,15 @@ public class ClientGame implements IRenderContext {
 	public void resizeApplication(int width, int height) {
 		if (height <= 0)
 			height = 1;
-		float aspect = (float) width / (float) height;
-		GL11.glViewport(0, 0, width, height);
-		GLStatic.glPerspective(45.0f, aspect, 0.01f, 100.0f);
-		GLStatic.glLookAt(-5.0f, 5.0f, 5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+		viewport.updateViewport(width, height);
 	}
 
 	private void loop() {
 		glContext = GLContext.createFromCurrent();
 		resizeApplication(800, 600);
 		renderer.prepare(this);
-
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		GL11.glShadeModel(GL11.GL_SMOOTH);
-		GL11.glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
-		GL11.glClearDepth(1.0);
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		GL11.glDepthFunc(GL11.GL_LEQUAL);
-		GL11.glEnable(GL11.GL_ALPHA_TEST);
-		GL11.glAlphaFunc(GL11.GL_GREATER, 0.0001F);
-		GL11.glEnable(GL11.GL_CULL_FACE);
-		GL11.glCullFace(GL11.GL_BACK);
-		GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT, GL11.GL_NICEST);
-
 		while (GLFW.glfwWindowShouldClose(glfwHWindow) == GL11.GL_FALSE) {
 			poll("render doFrame");
-			GL11.glClearColor(0.33f, 0.33f, 0.33f, 1.0f);
-			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 			renderer.renderGame(this);
 			GLFW.glfwSwapBuffers(glfwHWindow);
 			GLFW.glfwPollEvents();
