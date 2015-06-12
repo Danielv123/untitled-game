@@ -17,10 +17,9 @@ public class GLStatic {
 	private static float[] mulMatrix(Matrix4f f, float[] in) {
 		float[] out = new float[4];
 		f.get(fb);
-		float[] matrix = fb.array();
 		for (int i = 0; i < 4; i++) {
-			out[i] = in[0] * matrix[0 * 4 + i] + in[1] * matrix[1 * 4 + i] + in[2] * matrix[2 * 4 + i] + in[3]
-					* matrix[3 * 4 + i];
+			out[i] = in[0] * fb.get(0 * 4 + i) + in[1] * fb.get(1 * 4 + i) + in[2] * fb.get(2 * 4 + i) + in[3]
+					* fb.get(3 * 4 + i);
 		}
 		return out;
 	}
@@ -46,11 +45,11 @@ public class GLStatic {
 		Matrix4f.mul(modelMatrix, projMatrix, mat);
 		float matrix[] = { (float) in.x, (float) in.y, (float) in.z, 1.0f };
 
-		matrix[0] = (matrix[0] - viewport.x / viewport.width);
-		matrix[1] = (matrix[1] - viewport.y / viewport.height);
-		matrix[0] = matrix[0] * 2 - 1;
-		matrix[1] = matrix[1] * 2 - 1;
-		matrix[2] = matrix[2] * 2 - 1;
+		matrix[0] = (matrix[0] - viewport.x) / viewport.width;
+		matrix[1] = (matrix[1] - viewport.y) / viewport.height;
+		matrix[0] = (matrix[0] * 2.0f) - 1.0f;
+		matrix[1] = (matrix[1] * 2.0f) - 1.0f;
+		matrix[2] = (matrix[2] * 2.0f) - 1.0f;
 
 		float[] out = mulMatrix(mat, matrix);
 
@@ -75,6 +74,7 @@ public class GLStatic {
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glLoadIdentity();
 		GL11.glLoadMatrixf(fb);
+		GL11.glDepthRange(0.0f, 1.0f);
 		return new Matrix4f(m);
 	}
 

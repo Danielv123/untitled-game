@@ -15,7 +15,6 @@ import org.lwjgl.opengl.GLContext;
 import net.allochie.st.client.glfw.KeyCallbackImpl;
 import net.allochie.st.client.glfw.MouseButtonCallbackImpl;
 import net.allochie.st.client.glfw.WindowSizeCallbackImpl;
-import net.allochie.st.client.render.GLStatic;
 import net.allochie.st.client.render.IRenderContext;
 import net.allochie.st.client.render.RenderDispatcher;
 import net.allochie.st.client.screens.IScreen;
@@ -24,7 +23,7 @@ import net.allochie.st.shared.system.ThinkerThread;
 public class ClientGame implements IRenderContext {
 
 	public IScreen gameScreen;
-	public ClientViewport viewport;
+	public ClientViewport viewport = new ClientViewport();
 	public ClientWorld worldCache;
 	public ThinkerThread thinkThread;
 	public RenderDispatcher renderer = new RenderDispatcher();
@@ -79,7 +78,7 @@ public class ClientGame implements IRenderContext {
 		GLFW.glfwSetWindowPos(glfwHWindow, (GLFWvidmode.width(vidmode) - WIDTH) / 2,
 				(GLFWvidmode.height(vidmode) - HEIGHT) / 2);
 		GLFW.glfwMakeContextCurrent(glfwHWindow);
-		GLFW.glfwSetInputMode(glfwHWindow, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
+		// GLFW.glfwSetInputMode(glfwHWindow, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
 		GLFW.glfwSwapInterval(1);
 		GLFW.glfwShowWindow(glfwHWindow);
 	}

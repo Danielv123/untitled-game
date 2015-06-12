@@ -13,6 +13,7 @@ import net.allochie.st.client.ClientViewport;
 import net.allochie.st.client.ClientWorld;
 import net.allochie.st.client.render.strategy.StencilBufferStrategy;
 import net.allochie.st.client.render.texture.GLPNGTextureLoader;
+import net.allochie.st.shared.math.Vector3;
 import net.allochie.st.shared.render.ITexture;
 
 public class RenderDispatcher {
@@ -55,23 +56,33 @@ public class RenderDispatcher {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		renderGameWorld(theGame, theGame.viewport, theGame.worldCache);
 		renderCursor(theGame);
+
+		GL11.glPushMatrix();
+		GL11.glTranslated(0.0d, 0.0d, 5.0d);
+		GLStatic.glWriteColorCube();
+		GL11.glPopMatrix();
 	}
 
 	private void renderCursor(ClientGame theGame) {
 		DoubleBuffer xpos = BufferUtils.createDoubleBuffer(1), ypos = BufferUtils.createDoubleBuffer(1);
 		GLFW.glfwGetCursorPos(theGame.glfwHWindow, xpos, ypos);
 		double x = xpos.get(), y = ypos.get();
-		GL11.glPushMatrix();
-		cursor.bind();
-		GL11.glTranslated(x / 800.0d, y / 600.0d, 0.0d);
-		GLStatic.glWriteWall();
-		cursor.release();
-		GL11.glPopMatrix();
+		Vector3[] ray = RayCast.throwRay(theGame.viewport, (float) x, (float) y, 4.0f, 10.0f);
+
+		GL11.glLineWidth(10.0f);
+		GL11.glColor3f(1.0f, 0.0f, 0.0f);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		GL11.glBegin(GL11.GL_LINES);
+		GL11.glVertex3d(ray[0].x, ray[0].y, ray[0].z);
+		GL11.glVertex3d(ray[1].x, ray[1].y, ray[1].z);
+		GL11.glEnd();
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glColor3f(1.0f, 1.0f, 1.0f);
 
 	}
 
 	private void renderGameWorld(ClientGame theGame, ClientViewport viewport, ClientWorld world) {
-		//GLStatic.glWriteColorCube();
+		// GLStatic.glWriteColorCube();
 		GL11.glColor3f(1.0f, 1.0f, 1.0f);
 	}
 
