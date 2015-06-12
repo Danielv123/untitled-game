@@ -61,7 +61,7 @@ public class GLStatic {
 		return new Vector3(out[0] * out[3], out[1] * out[3], out[2] * out[3]);
 	}
 
-	public static Matrix4f glPerspective(float fovy, float aspect, float zNear, float zFar) {
+	public static Matrix4f glProjection(float fovy, float aspect, float zNear, float zFar) {
 		m.setPerspective(fovy, aspect, zNear, zFar).get(fb);
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
@@ -69,7 +69,7 @@ public class GLStatic {
 		return new Matrix4f(m);
 	}
 
-	public static Matrix4f glLookAt(float eyeX, float eyeY, float eyeZ, float centerX, float centerY, float centerZ,
+	public static Matrix4f glModel(float eyeX, float eyeY, float eyeZ, float centerX, float centerY, float centerZ,
 			float upX, float upY, float upZ) {
 		m.setLookAt(eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ).get(fb);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
