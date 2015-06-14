@@ -48,7 +48,8 @@ public class RenderDispatcher {
 	}
 
 	public void gameResized(ClientGame theGame, int width, int height) {
-		stencilBuffer.updateResolution(width, height);
+		if (stencilBuffer != null)
+			stencilBuffer.updateResolution(width, height);
 	}
 
 	public void renderGame(ClientGame theGame) {
@@ -56,18 +57,13 @@ public class RenderDispatcher {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		renderGameWorld(theGame, theGame.viewport, theGame.worldCache);
 		renderCursor(theGame);
-
-		GL11.glPushMatrix();
-		GL11.glTranslated(0.0d, 0.0d, 5.0d);
-		GLStatic.glWriteColorCube();
-		GL11.glPopMatrix();
 	}
 
 	private void renderCursor(ClientGame theGame) {
 		DoubleBuffer xpos = BufferUtils.createDoubleBuffer(1), ypos = BufferUtils.createDoubleBuffer(1);
 		GLFW.glfwGetCursorPos(theGame.glfwHWindow, xpos, ypos);
 		double x = xpos.get(), y = ypos.get();
-		Vector3[] ray = RayCast.throwRay(theGame.viewport, (float) x, (float) y, 4.0f, 10.0f);
+		Vector3[] ray = RayCast.throwRay(theGame.viewport, (float) x, (float) y, 0.0f, 1.0f);
 
 		GL11.glLineWidth(10.0f);
 		GL11.glColor3f(1.0f, 0.0f, 0.0f);
@@ -82,8 +78,9 @@ public class RenderDispatcher {
 	}
 
 	private void renderGameWorld(ClientGame theGame, ClientViewport viewport, ClientWorld world) {
-		// GLStatic.glWriteColorCube();
-		GL11.glColor3f(1.0f, 1.0f, 1.0f);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		GLStatic.glWriteColorCube();
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
 	}
 
 	private void renderInterface() {

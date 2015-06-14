@@ -26,7 +26,7 @@ public class ClientViewport {
 		float aspect = (float) width / (float) height;
 		GL11.glViewport(0, 0, width, height);
 		projMat = GLStatic.glProjection(45.0f, aspect, 0.01f, 100.0f);
-		modelMat = GLStatic.glModel(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 10.0f, 0.0f, 1.0f, 0.0f);
+		modelMat = GLStatic.glModel(x, y, 10.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 	}
 
 }

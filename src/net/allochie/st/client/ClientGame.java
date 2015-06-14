@@ -87,6 +87,7 @@ public class ClientGame implements IRenderContext {
 		if (height <= 0)
 			height = 1;
 		viewport.updateViewport(width, height);
+		renderer.gameResized(this, width, height);
 	}
 
 	private void loop() {

@@ -12,14 +12,15 @@ import org.lwjgl.opengl.GL11;
 public class GLStatic {
 
 	private static FloatBuffer fb = BufferUtils.createFloatBuffer(16);
-	private static Matrix4f m = new Matrix4f();
 
 	private static float[] mulMatrix(Matrix4f f, float[] in) {
 		float[] out = new float[4];
 		f.get(fb);
 		for (int i = 0; i < 4; i++) {
-			out[i] = in[0] * fb.get(0 * 4 + i) + in[1] * fb.get(1 * 4 + i) + in[2] * fb.get(2 * 4 + i) + in[3]
-					* fb.get(3 * 4 + i);
+			out[i] = in[0] * fb.get(i) + 
+					in[1] * fb.get(4 + i) + 
+					in[2] * fb.get(8 + i) + 
+					in[3] * fb.get(12 + i);
 		}
 		return out;
 	}
@@ -45,8 +46,8 @@ public class GLStatic {
 		Matrix4f.mul(modelMatrix, projMatrix, mat);
 		float matrix[] = { (float) in.x, (float) in.y, (float) in.z, 1.0f };
 
-		matrix[0] = (matrix[0] - viewport.x) / viewport.width;
-		matrix[1] = (matrix[1] - viewport.y) / viewport.height;
+		matrix[0] = (matrix[0] - viewport.x) / (float) viewport.width;
+		matrix[1] = (matrix[1] - viewport.y) / (float) viewport.height;
 		matrix[0] = (matrix[0] * 2.0f) - 1.0f;
 		matrix[1] = (matrix[1] * 2.0f) - 1.0f;
 		matrix[2] = (matrix[2] * 2.0f) - 1.0f;
@@ -61,21 +62,22 @@ public class GLStatic {
 	}
 
 	public static Matrix4f glProjection(float fovy, float aspect, float zNear, float zFar) {
+		Matrix4f m = new Matrix4f();
 		m.setPerspective(fovy, aspect, zNear, zFar).get(fb);
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
 		GL11.glLoadMatrixf(fb);
-		return new Matrix4f(m);
+		return m;
 	}
 
 	public static Matrix4f glModel(float eyeX, float eyeY, float eyeZ, float centerX, float centerY, float centerZ,
 			float upX, float upY, float upZ) {
+		Matrix4f m = new Matrix4f();
 		m.setLookAt(eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ).get(fb);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glLoadIdentity();
 		GL11.glLoadMatrixf(fb);
-		GL11.glDepthRange(0.0f, 1.0f);
-		return new Matrix4f(m);
+		return m;
 	}
 
 	public static void glWriteColorCube() {
@@ -232,6 +234,22 @@ public class GLStatic {
 		GL11.glTexCoord2f(0.0f, 0.0f);
 		GL11.glVertex3f(-1.0f, 1.0f, 0.0f);
 
+		GL11.glEnd();
+	}
+
+	public static void glWriteAxis() {
+		GL11.glBegin(GL11.GL_LINES);
+		GL11.glColor3f(1.0f, 0.0f, 0.0f);
+		GL11.glVertex3f(0.0f, 0.0f, 0.0f);
+		GL11.glVertex3f(1.0f, 0.0f, 0.0f);
+
+		GL11.glColor3f(0.0f, 1.0f, 0.0f);
+		GL11.glVertex3f(0.0f, 0.0f, 0.0f);
+		GL11.glVertex3f(0.0f, 1.0f, 0.0f);
+
+		GL11.glColor3f(0.0f, 0.0f, 1.0f);
+		GL11.glVertex3f(0.0f, 0.0f, 0.0f);
+		GL11.glVertex3f(0.0f, 0.0f, 1.0f);
 		GL11.glEnd();
 	}
 
