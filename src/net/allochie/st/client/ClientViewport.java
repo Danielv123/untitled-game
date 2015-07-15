@@ -1,7 +1,7 @@
 package net.allochie.st.client;
 
-import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.glu.GLU;
 
 import net.allochie.st.client.render.GLStatic;
 import net.allochie.st.shared.math.Vector2;
@@ -10,7 +10,6 @@ public class ClientViewport {
 
 	public int width, height;
 	public int x, y;
-	public Matrix4f projMat, modelMat;
 
 	public void updateViewport(int width, int height) {
 		this.width = width;
@@ -23,10 +22,11 @@ public class ClientViewport {
 	}
 
 	private void updateGlViewport() {
-		float aspect = (float) width / (float) height;
 		GL11.glViewport(0, 0, width, height);
-		projMat = GLStatic.glProjection(45.0f, aspect, 0.01f, 100.0f);
-		modelMat = GLStatic.glModel(x, y, 10.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glLoadIdentity();
+		float aspect = (float) width / (float) height;
+		GLU.gluPerspective(45.0f, aspect, 1.0f, 200.0f);
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 	}
-
 }

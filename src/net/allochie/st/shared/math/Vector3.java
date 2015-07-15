@@ -1,7 +1,5 @@
 package net.allochie.st.shared.math;
 
-import org.joml.Matrix4f;
-
 /**
  * Represents a Vector in three-dimensional space.
  *
@@ -180,18 +178,6 @@ public class Vector3 {
 	 */
 	public Vector3 mul(double c) {
 		return new Vector3(c * x, c * y, c * z);
-	}
-
-	/**
-	 * Multiply this Vector3 by the given rotation matrix mat
-	 * 
-	 * @param mat
-	 *            The rotation matrix
-	 * @return The Vector3 multiplication product
-	 */
-	public Vector3 mul(Matrix4f mat) {
-		return new Vector3(mat.m00 * x + mat.m10 * y + mat.m20 * z, mat.m01 * x + mat.m11 * y + mat.m21 * z, mat.m02
-				* x + mat.m12 * y + mat.m22 * z);
 	}
 
 	/**

@@ -1,12 +1,11 @@
 package net.allochie.st.client.render;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.DoubleBuffer;
 
-import org.lwjgl.BufferUtils;
-import org.lwjgl.glfw.GLFW;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.glu.GLU;
 
 import net.allochie.st.client.ClientGame;
 import net.allochie.st.client.ClientViewport;
@@ -55,31 +54,45 @@ public class RenderDispatcher {
 	public void renderGame(ClientGame theGame) {
 		GL11.glClearColor(0.33f, 0.33f, 0.33f, 1.0f);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glLoadIdentity();
+		GLU.gluLookAt(0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GLStatic.glWriteAxis();
+
 		renderGameWorld(theGame, theGame.viewport, theGame.worldCache);
 		renderCursor(theGame);
 	}
 
 	private void renderCursor(ClientGame theGame) {
-		DoubleBuffer xpos = BufferUtils.createDoubleBuffer(1), ypos = BufferUtils.createDoubleBuffer(1);
-		GLFW.glfwGetCursorPos(theGame.glfwHWindow, xpos, ypos);
-		double x = xpos.get(), y = ypos.get();
+		double x = Mouse.getX(), y = Mouse.getY();
 		Vector3[] ray = RayCast.throwRay(theGame.viewport, (float) x, (float) y, 0.0f, 1.0f);
+		Display.setTitle("Game: " + ray[0] + ", " + ray[1]);
 
-		GL11.glLineWidth(10.0f);
-		GL11.glColor3f(1.0f, 0.0f, 0.0f);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		GL11.glBegin(GL11.GL_LINES);
-		GL11.glVertex3d(ray[0].x, ray[0].y, ray[0].z);
-		GL11.glVertex3d(ray[1].x, ray[1].y, ray[1].z);
+		GL11.glColor3f(0.0f, 1.0f, 0.0f);
+		GL11.glBegin(GL11.GL_QUADS);
+		Vector3 rz = ray[1];
+		GL11.glVertex3d(rz.x, rz.y, rz.z);
+		GL11.glVertex3d(rz.x, rz.y - 0.01d, rz.z);
+		GL11.glVertex3d(rz.x + 0.01d, rz.y - 0.01d, rz.z);
+		GL11.glVertex3d(rz.x + 0.01d, rz.y, rz.z);
 		GL11.glEnd();
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glColor3f(1.0f, 1.0f, 1.0f);
-
 	}
 
 	private void renderGameWorld(ClientGame theGame, ClientViewport viewport, ClientWorld world) {
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		GLStatic.glWriteColorCube();
+		for (int x = -5; x < 5; x++) {
+			for (int y = -5; y < 5; y++) {
+				GL11.glPushMatrix();
+				GL11.glTranslatef(x * 2.4f, y * 2.4f, -30.0f);
+				GLStatic.glWriteColorCube();
+				GL11.glPopMatrix();
+			}
+		}
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 	}
 
