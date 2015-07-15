@@ -12,6 +12,8 @@ import net.allochie.st.client.ClientViewport;
 import net.allochie.st.client.ClientWorld;
 import net.allochie.st.client.render.strategy.StencilBufferStrategy;
 import net.allochie.st.client.render.texture.GLPNGTextureLoader;
+import net.allochie.st.shared.math.AABB;
+import net.allochie.st.shared.math.Ray3;
 import net.allochie.st.shared.math.Vector3;
 import net.allochie.st.shared.render.ITexture;
 
@@ -68,28 +70,35 @@ public class RenderDispatcher {
 	private void renderCursor(ClientGame theGame) {
 		double x = Mouse.getX(), y = Mouse.getY();
 		Vector3[] ray = RayCast.throwRay(theGame.viewport, (float) x, (float) y, 0.0f, 1.0f);
-		Display.setTitle("Game: " + ray[0] + ", " + ray[1]);
-
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		GL11.glColor3f(0.0f, 1.0f, 0.0f);
+		Vector3 rz = ray[0];
+		cursor.bind();
+		GL11.glColor3f(1.0f, 1.0f, 1.0f);
 		GL11.glBegin(GL11.GL_QUADS);
-		Vector3 rz = ray[1];
+		GL11.glTexCoord2f(cursor.u0(), cursor.v0());
 		GL11.glVertex3d(rz.x, rz.y, rz.z);
+		GL11.glTexCoord2f(cursor.u0(), cursor.v1());
 		GL11.glVertex3d(rz.x, rz.y - 0.01d, rz.z);
+		GL11.glTexCoord2f(cursor.u1(), cursor.v1());
 		GL11.glVertex3d(rz.x + 0.01d, rz.y - 0.01d, rz.z);
+		GL11.glTexCoord2f(cursor.u1(), cursor.v0());
 		GL11.glVertex3d(rz.x + 0.01d, rz.y, rz.z);
 		GL11.glEnd();
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		GL11.glColor3f(1.0f, 1.0f, 1.0f);
+		cursor.release();
 	}
 
 	private void renderGameWorld(ClientGame theGame, ClientViewport viewport, ClientWorld world) {
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		for (int x = -5; x < 5; x++) {
-			for (int y = -5; y < 5; y++) {
+		Vector3[] ray = RayCast.throwRay(theGame.viewport, (float) Mouse.getX(), (float) Mouse.getY(), 0.0f, 1.0f);
+		Ray3 gameRay = Ray3.fromLine(ray[0], ray[1]);
+
+		for (int x = -9; x <= 9; x++) {
+			for (int y = -9; y <= 9; y++) {
 				GL11.glPushMatrix();
 				GL11.glTranslatef(x * 2.4f, y * 2.4f, -30.0f);
-				GLStatic.glWriteColorCube();
+				AABB box = new AABB(new Vector3((x * 2.4f) - 1.0f, (y * 2.4f) - 1.0f, -29.0f), new Vector3(
+						(x * 2.4f) + 1.0f, (y * 2.4f) + 1.0f, -31.0f));
+				if (box.intersectsRay(gameRay, 0.0f, 9999999.0f) == null)
+					GLStatic.glWriteColorCube();
 				GL11.glPopMatrix();
 			}
 		}

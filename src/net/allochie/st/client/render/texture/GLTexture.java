@@ -16,6 +16,8 @@ public class GLTexture implements ITexture {
 	private float widthRatio;
 	private float heightRatio;
 
+	private float u0, u1, v0, v1;
+
 	public GLTexture(int glTargetEnum, int glTextureId) {
 		this.glTargetEnum = glTargetEnum;
 		this.glTextureId = glTextureId;
@@ -23,8 +25,9 @@ public class GLTexture implements ITexture {
 
 	@Override
 	public ITexture derive(int u0, int v0, int u1, int v1) {
-		// TODO Auto-generated method stub
-		return null;
+		GLTexture tex0 = new GLTexture(glTargetEnum, glTextureId);
+		tex0.setUVAB(u0, v0, u1, v1);
+		return tex0;
 	}
 
 	@Override
@@ -101,6 +104,33 @@ public class GLTexture implements ITexture {
 	 */
 	public float getHeight() {
 		return heightRatio;
+	}
+
+	protected void setUVAB(float u0, float v0, float u1, float v1) {
+		this.u0 = u0;
+		this.v0 = v0;
+		this.u1 = u1;
+		this.v1 = v1;
+	}
+
+	@Override
+	public float u0() {
+		return u0;
+	}
+
+	@Override
+	public float v0() {
+		return v0;
+	}
+
+	@Override
+	public float u1() {
+		return u1;
+	}
+
+	@Override
+	public float v1() {
+		return v1;
 	}
 
 }

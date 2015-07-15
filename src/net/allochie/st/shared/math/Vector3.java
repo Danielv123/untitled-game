@@ -113,6 +113,17 @@ public class Vector3 {
 	}
 
 	/**
+	 * 
+	 * @return
+	 */
+	public Vector3 normalize() {
+		double mag = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
+		if (mag > 0.0d)
+			return mul(1.0d / mag);
+		return copy();
+	}
+
+	/**
 	 * Adds the specified components to this Vector3, returns a new Vector3
 	 * product.
 	 *

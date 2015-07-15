@@ -12,6 +12,24 @@ import net.allochie.st.shared.math.Vector3;
 
 public class RayCast {
 
+	/**
+	 * Casts a ray in the viewport. The ray is cast from the cursor's
+	 * coordinates at the near-depth specified to the end of the far buffer, or
+	 * the far value specified.
+	 * 
+	 * @param viewport
+	 *            The game viewport
+	 * @param mouseX
+	 *            The mouse x-coordinate
+	 * @param mouseY
+	 *            The mouse y-coordinate
+	 * @param near
+	 *            The near depth
+	 * @param far
+	 *            The far depth
+	 * @return The cast ray array; the near coordinate, the far coordinate and
+	 *         the first-hit depth z coordinate vector
+	 */
 	public static Vector3[] throwRay(ClientViewport viewport, float mouseX, float mouseY, float near, float far) {
 		FloatBuffer model = BufferUtils.createFloatBuffer(16);
 		FloatBuffer projection = BufferUtils.createFloatBuffer(16);
@@ -23,12 +41,15 @@ public class RayCast {
 
 		FloatBuffer posNear = BufferUtils.createFloatBuffer(16);
 		FloatBuffer posFar = BufferUtils.createFloatBuffer(16);
+		FloatBuffer z = BufferUtils.createFloatBuffer(1);
 
-		GLU.gluUnProject(mouseX, mouseY, 0.0f, model, projection, vpx, posNear);
-		GLU.gluUnProject(mouseX, mouseY, 1.0f, model, projection, vpx, posFar);
+		GLU.gluUnProject(mouseX, mouseY, near, model, projection, vpx, posNear);
+		GLU.gluUnProject(mouseX, mouseY, far, model, projection, vpx, posFar);
 
-		return new Vector3[] { new Vector3(posFar.get(), posFar.get(), posFar.get()),
-				new Vector3(posNear.get(), posNear.get(), posNear.get()) };
+		GL11.glReadPixels((int) mouseX, (int) mouseY, 1, 1, GL11.GL_DEPTH_COMPONENT, GL11.GL_FLOAT, z);
+
+		return new Vector3[] { new Vector3(posNear.get(), posNear.get(), posNear.get()),
+				new Vector3(posFar.get(), posFar.get(), posFar.get()), new Vector3(0, 0, z.get()) };
 	}
 
 }

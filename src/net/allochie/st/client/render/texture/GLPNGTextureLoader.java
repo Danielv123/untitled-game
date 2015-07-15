@@ -74,6 +74,7 @@ public class GLPNGTextureLoader {
 		GL11.glTexImage2D(target, 0, dstPixelFormat, get2Fold(bufferedImage.getWidth()),
 				get2Fold(bufferedImage.getHeight()), 0, srcPixelFormat, GL11.GL_UNSIGNED_BYTE, textureBuffer);
 
+		texture.setUVAB(0.0f, 0.0f, 1.0f, 1.0f);
 		return texture;
 	}
 

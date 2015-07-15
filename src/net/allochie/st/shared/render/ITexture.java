@@ -8,4 +8,12 @@ public interface ITexture {
 
 	public void release();
 
+	public float u0();
+
+	public float v0();
+
+	public float u1();
+
+	public float v1();
+
 }

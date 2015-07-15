@@ -2,7 +2,11 @@ package net.allochie.st.client;
 
 import java.nio.ByteBuffer;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Cursor;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Util;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
@@ -48,7 +52,10 @@ public class ClientGame implements IRenderContext {
 		Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
 		Display.setResizable(true);
 		Display.create();
+		Mouse.create();
+		Keyboard.create();
 
+		Mouse.setNativeCursor(new Cursor(1, 1, 0, 0, 1, BufferUtils.createIntBuffer(1), null));
 	}
 
 	public void resizeApplication(int width, int height) {
@@ -71,6 +78,8 @@ public class ClientGame implements IRenderContext {
 			Display.sync(120);
 		}
 		Display.destroy();
+		Mouse.destroy();
+		Keyboard.destroy();
 	}
 
 	public void shutdown() {
