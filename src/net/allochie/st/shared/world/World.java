@@ -14,10 +14,9 @@ public class World implements IWorldAccess, IThink {
 
 	protected boolean isServerWorld;
 
-	protected int worldHeight;
-	protected int worldWidth;
-	public int chunkWidth = defaultChunkWidth;
-	public int chunkHeight = defaultChunkHeight;
+	public String worldName;
+	public int worldWidth, worldHeight;
+	public int chunkWidth = defaultChunkWidth, chunkHeight = defaultChunkHeight;
 
 	private List<Chunk> chunks = new ArrayList<Chunk>();
 	private ChunkProvider provider;

@@ -9,9 +9,9 @@ public class Chunk {
 	private ChunkCoord position;
 
 	public int width, height;
-	private int[][] blocks;
-	private int[][] blockData;
-	private List<Tile> tiles;
+	public int[][] blocks;
+	public int[][] blockData;
+	public List<Tile> tiles;
 
 	public Chunk(int width, int height) {
 		this.width = width;

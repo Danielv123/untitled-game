@@ -47,9 +47,9 @@ public class NetworkQueue {
 					throw new NetworkException("Packet enqueued without player or with dead reference.");
 				Packet packet = obj.packet;
 				if (side == Side.SERVER)
-					player.handleServerPacket(manager, packet);
+					player.handleServerPacket(packet);
 				if (side == Side.CLIENT)
-					player.handleClientPacket(manager, packet);
+					player.handleClientPacket(packet);
 			} catch (NetworkException exception) {
 				exception.printStackTrace();
 			}

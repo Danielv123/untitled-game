@@ -40,7 +40,7 @@ public class NetworkManager implements IThink {
 	}
 
 	public void spinUpClient(String host, int port) {
-		this.clientPlayer = new ServerPlayer();
+		this.clientPlayer = new ServerPlayer(this);
 		this.clientQueue = new NetworkQueue(this, Side.CLIENT, "Client network queue");
 		this.client = new NetworkClient(this, host, port);
 	}
@@ -60,7 +60,7 @@ public class NetworkManager implements IThink {
 
 	public ServerPlayer registerServerChannel(Channel channel) {
 		synchronized (playerChannels) {
-			ServerPlayer player = new ServerPlayer();
+			ServerPlayer player = new ServerPlayer(this);
 			playerChannels.put(player, channel);
 			return player;
 		}
