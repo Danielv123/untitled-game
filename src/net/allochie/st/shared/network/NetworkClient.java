@@ -1,6 +1,10 @@
 package net.allochie.st.shared.network;
 
+import java.io.IOException;
+
+import net.allochie.st.shared.network.impl.NetworkClientConnectionInitializer;
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -11,9 +15,11 @@ public class NetworkClient {
 	EventLoopGroup group = new NioEventLoopGroup();
 	Bootstrap b = new Bootstrap();
 	Channel ch;
+	NetworkManager manager;
 
-	public NetworkClient(String host, int port) {
-		b.group(group).channel(NioSocketChannel.class).handler(new NetworkClientConnectionInitializer());
+	public NetworkClient(NetworkManager manager, String host, int port) {
+		this.manager = manager;
+		b.group(group).channel(NioSocketChannel.class).handler(new NetworkClientConnectionInitializer(manager));
 		try {
 			ch = b.connect(host, port).sync().channel();
 		} catch (InterruptedException interrupt) {
@@ -27,6 +33,16 @@ public class NetworkClient {
 		} catch (InterruptedException interrupt) {
 		} finally {
 			group.shutdownGracefully();
+		}
+	}
+
+	public void sendPacketToServer(Packet packet) {
+		try {
+			ByteBuf buf = ch.alloc().buffer();
+			Encapsulator.encapsulatePacket(buf, packet);
+			ch.writeAndFlush(buf);
+		} catch (IOException ioex) {
+			ioex.printStackTrace();
 		}
 	}
 }

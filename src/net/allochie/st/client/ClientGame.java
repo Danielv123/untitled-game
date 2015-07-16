@@ -16,6 +16,7 @@ import net.allochie.st.client.render.RenderDispatcher;
 import net.allochie.st.client.screens.IScreen;
 import net.allochie.st.server.ServerGameSession;
 import net.allochie.st.shared.network.NetworkClient;
+import net.allochie.st.shared.network.NetworkManager;
 import net.allochie.st.shared.system.ThinkerThread;
 
 public class ClientGame implements IRenderContext {
@@ -27,7 +28,7 @@ public class ClientGame implements IRenderContext {
 	public RenderDispatcher renderer = new RenderDispatcher();
 
 	private Thread serverThread;
-	private NetworkClient networkClient;
+	private NetworkManager clientNetwork;
 
 	public ClientGame() {
 		try {
@@ -71,7 +72,9 @@ public class ClientGame implements IRenderContext {
 
 		Mouse.setNativeCursor(new Cursor(1, 1, 0, 0, 1, BufferUtils.createIntBuffer(1), null));
 
-		networkClient = new NetworkClient("localhost", 9000);
+		clientNetwork = new NetworkManager();
+		thinkThread.addThinker(clientNetwork);
+		clientNetwork.spinUpClient("localhost", 9000);
 	}
 
 	public void resizeApplication(int width, int height) {
@@ -96,7 +99,7 @@ public class ClientGame implements IRenderContext {
 		Display.destroy();
 		Mouse.destroy();
 		Keyboard.destroy();
-		networkClient.shutdown();
+		clientNetwork.shutdown();
 	}
 
 	public void shutdown() {
