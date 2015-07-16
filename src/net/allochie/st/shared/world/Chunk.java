@@ -8,7 +8,7 @@ public class Chunk {
 
 	private ChunkCoord position;
 
-	private int width, height;
+	public int width, height;
 	private int[][] blocks;
 	private int[][] blockData;
 	private List<Tile> tiles;
@@ -26,6 +26,10 @@ public class Chunk {
 
 	public ChunkCoord getPosition() {
 		return position;
+	}
+
+	public Vector2 getSize() {
+		return new Vector2(width, height);
 	}
 
 	public boolean setBlock(Vector2 blockCoords, Block block, int data) {

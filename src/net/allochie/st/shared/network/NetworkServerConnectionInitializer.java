@@ -9,7 +9,7 @@ public class NetworkServerConnectionInitializer extends ChannelInitializer<Socke
 	@Override
 	protected void initChannel(SocketChannel ch) throws Exception {
 		ChannelPipeline pipeline = ch.pipeline();
-		pipeline.addFirst(new NetworkServerConnectionHandler());
+		pipeline.addLast(new NetworkServerConnectionHandler());
 	}
 
 }

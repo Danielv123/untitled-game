@@ -13,7 +13,7 @@ public class NetworkServer {
 
 	public NetworkServer(int port) {
 		b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
-				.handler(new NetworkServerConnectionInitializer());
+				.childHandler(new NetworkServerConnectionInitializer());
 		try {
 			b.bind(port).sync().channel().closeFuture().sync();
 		} catch (InterruptedException interrupt) {
@@ -21,6 +21,11 @@ public class NetworkServer {
 			bossGroup.shutdownGracefully();
 			workerGroup.shutdownGracefully();
 		}
+	}
+
+	public void shutdown() {
+		bossGroup.shutdownGracefully();
+		workerGroup.shutdownGracefully();
 	}
 
 }

@@ -1,11 +1,5 @@
 package net.allochie.st.client.render;
 
-import java.nio.FloatBuffer;
-
-import net.allochie.st.client.ClientViewport;
-import net.allochie.st.shared.math.Vector3;
-
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
 public class GLStatic {

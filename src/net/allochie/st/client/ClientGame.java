@@ -1,6 +1,6 @@
 package net.allochie.st.client;
 
-import java.nio.ByteBuffer;
+import java.io.File;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
@@ -14,6 +14,8 @@ import org.lwjgl.opengl.DisplayMode;
 import net.allochie.st.client.render.IRenderContext;
 import net.allochie.st.client.render.RenderDispatcher;
 import net.allochie.st.client.screens.IScreen;
+import net.allochie.st.server.ServerGameSession;
+import net.allochie.st.shared.network.NetworkClient;
 import net.allochie.st.shared.system.ThinkerThread;
 
 public class ClientGame implements IRenderContext {
@@ -24,10 +26,22 @@ public class ClientGame implements IRenderContext {
 	public ThinkerThread thinkThread;
 	public RenderDispatcher renderer = new RenderDispatcher();
 
+	private Thread serverThread;
+	private NetworkClient networkClient;
+
 	public ClientGame() {
 		try {
 			this.thinkThread = new ThinkerThread();
 			thinkThread.startThread(false);
+
+			serverThread = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					new ServerGameSession(new File("./server"));
+				}
+			});
+			serverThread.start();
+
 			init();
 			loop();
 		} catch (LWJGLException ex) {
@@ -56,6 +70,8 @@ public class ClientGame implements IRenderContext {
 		Keyboard.create();
 
 		Mouse.setNativeCursor(new Cursor(1, 1, 0, 0, 1, BufferUtils.createIntBuffer(1), null));
+
+		networkClient = new NetworkClient("localhost", 9000);
 	}
 
 	public void resizeApplication(int width, int height) {
@@ -80,6 +96,7 @@ public class ClientGame implements IRenderContext {
 		Display.destroy();
 		Mouse.destroy();
 		Keyboard.destroy();
+		networkClient.shutdown();
 	}
 
 	public void shutdown() {

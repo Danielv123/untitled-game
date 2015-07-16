@@ -32,7 +32,14 @@ public abstract class Block {
 	}
 
 	public abstract void initializeTextures(ITextureProvider provider);
-
+	
+	public abstract boolean renderBack(IWorldAccess world, int x, int y);
 	public abstract ITexture getRenderTexture(IWorldAccess world, int x, int y);
+
+	public abstract boolean[] renderWalls(IWorldAccess world, int x, int y);
+	public abstract ITexture[] getWallTexture(IWorldAccess world, int x, int y);
+
+	public abstract boolean renderCeiling(IWorldAccess world, int x, int y);
+	public abstract ITexture getCeilingTexture(IWorldAccess world, int x, int y);
 
 }

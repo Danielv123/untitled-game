@@ -3,15 +3,14 @@ package net.allochie.st.client.render;
 import java.io.IOException;
 
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.GLU;
 
 import net.allochie.st.client.ClientGame;
 import net.allochie.st.client.ClientViewport;
 import net.allochie.st.client.ClientWorld;
 import net.allochie.st.client.render.strategy.StencilBufferStrategy;
 import net.allochie.st.client.render.texture.GLPNGTextureLoader;
+import net.allochie.st.client.render.world.ClientWorldRenderer;
 import net.allochie.st.shared.math.AABB;
 import net.allochie.st.shared.math.Ray3;
 import net.allochie.st.shared.math.Vector3;
@@ -20,6 +19,7 @@ import net.allochie.st.shared.render.ITexture;
 public class RenderDispatcher {
 
 	protected GLPNGTextureLoader pngTextureLoader = new GLPNGTextureLoader();
+	protected ClientWorldRenderer worldRenderer = new ClientWorldRenderer();
 	protected StencilBufferStrategy stencilBuffer;
 	protected ITexture cursor = null;
 
@@ -56,14 +56,13 @@ public class RenderDispatcher {
 	public void renderGame(ClientGame theGame) {
 		GL11.glClearColor(0.33f, 0.33f, 0.33f, 1.0f);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glLoadIdentity();
-		GLU.gluLookAt(0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+		theGame.viewport.updateCamera();
+
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GLStatic.glWriteAxis();
 
-		renderGameWorld(theGame, theGame.viewport, theGame.worldCache);
+		worldRenderer.renderWorld(theGame);
 		renderCursor(theGame);
 	}
 
@@ -94,9 +93,9 @@ public class RenderDispatcher {
 		for (int x = -9; x <= 9; x++) {
 			for (int y = -9; y <= 9; y++) {
 				GL11.glPushMatrix();
-				GL11.glTranslatef(x * 2.4f, y * 2.4f, -30.0f);
-				AABB box = new AABB(new Vector3((x * 2.4f) - 1.0f, (y * 2.4f) - 1.0f, -29.0f), new Vector3(
-						(x * 2.4f) + 1.0f, (y * 2.4f) + 1.0f, -31.0f));
+				GL11.glTranslatef(x * 2.4f, y * 2.4f, -2.0f);
+				AABB box = new AABB(new Vector3((x * 2.4f) - 1.0f, (y * 2.4f) - 1.0f, -3.0f), new Vector3(
+						(x * 2.4f) + 1.0f, (y * 2.4f) + 1.0f, -1.0f));
 				if (box.intersectsRay(gameRay, 0.0f, 9999999.0f) == null)
 					GLStatic.glWriteColorCube();
 				GL11.glPopMatrix();

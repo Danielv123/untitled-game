@@ -16,8 +16,8 @@ public class World implements IWorldAccess, IThink {
 
 	protected int worldHeight;
 	protected int worldWidth;
-	protected int chunkWidth = defaultChunkWidth;
-	protected int chunkHeight = defaultChunkHeight;
+	public int chunkWidth = defaultChunkWidth;
+	public int chunkHeight = defaultChunkHeight;
 
 	private List<Chunk> chunks = new ArrayList<Chunk>();
 	private ChunkProvider provider;
@@ -56,6 +56,12 @@ public class World implements IWorldAccess, IThink {
 		if (zz != null)
 			chunks.add(zz);
 		return zz;
+	}
+
+	public Chunk[] getAdjacentChunks(Chunk gameChunk) {
+		ChunkCoord coord = gameChunk.getPosition();
+		return new Chunk[] { getChunkFromCoords(new ChunkCoord(coord.x - 1, coord.y)),
+				getChunkFromCoords(new ChunkCoord(coord.x + 1, coord.y)) };
 	}
 
 	@Override

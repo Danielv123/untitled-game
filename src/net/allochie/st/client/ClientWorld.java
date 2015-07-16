@@ -53,17 +53,12 @@ public class ClientWorld extends World {
 		}
 	}
 
-	@Override
-	public void thinkClient() {
-		thinkClientReRenderChunks();
-	}
-
-	private void thinkClientReRenderChunks() {
+	public Chunk selectDirtyChunk() {
 		if (dirtyChunks.size() > 0) {
 			Collections.sort(dirtyChunks, dirtyChunkSorter);
-			// TODO: dirtyChunks is now sorted from close -> far,
-			// so we can re-render the closest chunks to a vbo here
+			return dirtyChunks.remove(0);
 		}
+		return null;
 	}
 
 }
