@@ -18,17 +18,24 @@ import net.allochie.st.server.ServerGameSession;
 import net.allochie.st.shared.network.NetworkClient;
 import net.allochie.st.shared.network.NetworkManager;
 import net.allochie.st.shared.system.ThinkerThread;
+import net.allochie.st.shared.world.Block;
+import net.allochie.st.shared.world.provider.ChunkProviderClient;
 
 public class ClientGame implements IRenderContext {
 
+	public ThinkerThread thinkThread;
+
 	public IScreen gameScreen;
 	public ClientViewport viewport = new ClientViewport();
-	public ClientWorld worldCache;
-	public ThinkerThread thinkThread;
 	public RenderDispatcher renderer = new RenderDispatcher();
+
+	public ClientWorld worldCache;
+	public ChunkProviderClient chunkCache;
 
 	private Thread serverThread;
 	private NetworkManager clientNetwork;
+
+	public ClientPlayer currentPlayer;
 
 	public ClientGame() {
 		try {
@@ -74,7 +81,7 @@ public class ClientGame implements IRenderContext {
 
 		clientNetwork = new NetworkManager();
 		thinkThread.addThinker(clientNetwork);
-		clientNetwork.spinUpClient("localhost", 9000);
+		clientNetwork.spinUpClient(this, "localhost", 9000);
 	}
 
 	public void resizeApplication(int width, int height) {

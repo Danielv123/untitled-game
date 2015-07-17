@@ -1,6 +1,7 @@
 package net.allochie.st.shared.world;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 import net.allochie.st.shared.render.ITexture;
 import net.allochie.st.shared.render.ITextureProvider;
@@ -23,6 +24,12 @@ public abstract class Block {
 		return block.blockid;
 	}
 
+	public static void initBlocks(ITextureProvider textures) {
+		Iterator<Block> types = blockTypes.values().iterator();
+		while (types.hasNext())
+			types.next().initializeTextures(textures);
+	}
+
 	/** The block ID */
 	public final int blockid;
 
@@ -32,14 +39,17 @@ public abstract class Block {
 	}
 
 	public abstract void initializeTextures(ITextureProvider provider);
-	
+
 	public abstract boolean renderBack(IWorldAccess world, int x, int y);
+
 	public abstract ITexture getRenderTexture(IWorldAccess world, int x, int y);
 
 	public abstract boolean[] renderWalls(IWorldAccess world, int x, int y);
+
 	public abstract ITexture[] getWallTexture(IWorldAccess world, int x, int y);
 
 	public abstract boolean renderCeiling(IWorldAccess world, int x, int y);
+
 	public abstract ITexture getCeilingTexture(IWorldAccess world, int x, int y);
 
 }

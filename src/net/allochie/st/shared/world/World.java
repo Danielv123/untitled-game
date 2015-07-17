@@ -7,15 +7,15 @@ import net.allochie.st.shared.math.Vector2;
 import net.allochie.st.shared.system.IThink;
 import net.allochie.st.shared.world.provider.ChunkProvider;
 
-public class World implements IWorldAccess, IThink {
+public abstract class World implements IWorldAccess, IThink {
 
 	public static final int defaultChunkWidth = 32;
-	public static final int defaultChunkHeight = 256;
+	public static final int defaultChunkHeight = 32;
 
 	protected boolean isServerWorld;
 
 	public String worldName;
-	public int worldWidth, worldHeight;
+	public int worldWidth = 128, worldHeight = 128;
 	public int chunkWidth = defaultChunkWidth, chunkHeight = defaultChunkHeight;
 
 	private List<Chunk> chunks = new ArrayList<Chunk>();
@@ -40,7 +40,7 @@ public class World implements IWorldAccess, IThink {
 	}
 
 	public Vector2 getBlockCoordsInChunk(ChunkCoord coord, int bx, int by) {
-		return new Vector2(bx - coord.x, by - coord.y);
+		return new Vector2(bx - (chunkWidth * coord.x), by - (chunkHeight * coord.y));
 	}
 
 	public Chunk getChunkFromBlockCoords(int x, int y) {
@@ -65,6 +65,11 @@ public class World implements IWorldAccess, IThink {
 
 	@Override
 	public void setBlockInWorld(int x, int y, Block block, int data) {
+		int type = Block.getTypeOfBlock(block);
+		setBlockInWorld(x, y, type, data);
+	}
+
+	public void setBlockInWorld(int x, int y, int block, int data) {
 		ChunkCoord coord = getChunkCoordsForBlockCoords(x, y);
 		Chunk chunk = getChunkFromCoords(coord);
 		Vector2 blockCoords = getBlockCoordsInChunk(coord, x, y);
@@ -90,10 +95,7 @@ public class World implements IWorldAccess, IThink {
 	}
 
 	@Override
-	public void markBlockForUpdate(int x, int y) {
-		// TODO Send change to client
-
-	}
+	public abstract void markBlockForUpdate(int x, int y);
 
 	@Override
 	public Tile getBlockTile(int x, int y) {

@@ -9,13 +9,15 @@ import net.allochie.st.shared.network.Packet;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 
-public class NetworkServerConnectionHandler extends ChannelInboundHandlerAdapter {
+public class NetworkServerConnectionHandler extends LengthFieldBasedFrameDecoder {
 
 	private final NetworkManager manager;
 	private ServerPlayer hostedPlayer;
 
 	public NetworkServerConnectionHandler(NetworkManager manager) {
+		super(3 * 1024 * 1024, 0, 4, 0, 4);
 		this.manager = manager;
 	}
 
@@ -25,14 +27,16 @@ public class NetworkServerConnectionHandler extends ChannelInboundHandlerAdapter
 	}
 
 	@Override
-	public void channelRead(ChannelHandlerContext ctx, Object msg) {
-		try {
-			ByteBuf buffer = (ByteBuf) msg;
-			Packet packet = Encapsulator.deencapsulatePacket(buffer);
-			manager.serverQueue().queue(packet, hostedPlayer);
-		} catch (IOException ioex) {
-			ioex.printStackTrace();
-		}
+	protected Object decode(ChannelHandlerContext arg0, ByteBuf arg1) throws Exception {
+		ByteBuf frame = (ByteBuf) super.decode(arg0, arg1);
+		if (frame != null)
+			try {
+				Packet packet = Encapsulator.deencapsulatePacket(frame);
+				manager.serverQueue().queue(packet, hostedPlayer);
+			} catch (IOException ioex) {
+				ioex.printStackTrace();
+			}
+		return null;
 	}
 
 	@Override

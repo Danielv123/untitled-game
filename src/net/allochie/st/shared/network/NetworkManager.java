@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import net.allochie.st.client.ClientGame;
+import net.allochie.st.client.ClientPlayer;
+import net.allochie.st.server.ServerGameSession;
 import net.allochie.st.server.ServerPlayer;
 import net.allochie.st.shared.system.IThink;
 import net.allochie.st.shared.system.Side;
@@ -20,14 +23,16 @@ public class NetworkManager implements IThink {
 	protected NetworkQueue clientQueue;
 	protected NetworkQueue serverQueue;
 
-	protected ServerPlayer clientPlayer;
+	protected ClientPlayer clientPlayer;
 	protected HashMap<ServerPlayer, Channel> playerChannels;
+
+	protected ServerGameSession gameServer;
 
 	public NetworkManager() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public ServerPlayer clientPlayer() {
+	public ClientPlayer clientPlayer() {
 		return clientPlayer;
 	}
 
@@ -39,13 +44,14 @@ public class NetworkManager implements IThink {
 		return serverQueue;
 	}
 
-	public void spinUpClient(String host, int port) {
-		this.clientPlayer = new ServerPlayer(this);
+	public void spinUpClient(ClientGame game, String host, int port) {
+		this.clientPlayer = new ClientPlayer(game, this);
 		this.clientQueue = new NetworkQueue(this, Side.CLIENT, "Client network queue");
 		this.client = new NetworkClient(this, host, port);
 	}
 
-	public void spinUpServer(int port) {
+	public void spinUpServer(ServerGameSession gameServer, int port) {
+		this.gameServer = gameServer;
 		this.playerChannels = new HashMap<ServerPlayer, Channel>();
 		this.serverQueue = new NetworkQueue(this, Side.SERVER, "Server network queue");
 		this.server = new NetworkServer(this, port);
@@ -60,7 +66,7 @@ public class NetworkManager implements IThink {
 
 	public ServerPlayer registerServerChannel(Channel channel) {
 		synchronized (playerChannels) {
-			ServerPlayer player = new ServerPlayer(this);
+			ServerPlayer player = new ServerPlayer(gameServer, this);
 			playerChannels.put(player, channel);
 			return player;
 		}
@@ -90,11 +96,12 @@ public class NetworkManager implements IThink {
 	public void sendPacketToPlayer(ServerPlayer player, Packet packet) {
 		Channel channel = playerChannel(player);
 		try {
-			ByteBuf buf = channel.alloc().buffer();
+			ByteBuf buf = channel.alloc().buffer(4096);
 			Encapsulator.encapsulatePacket(buf, packet);
-			channel.writeAndFlush(buf);
+			channel.writeAndFlush(buf).sync();
 		} catch (IOException ioex) {
 			ioex.printStackTrace();
+		} catch (InterruptedException interrupt) {
 		}
 	}
 
@@ -104,11 +111,12 @@ public class NetworkManager implements IThink {
 			while (itx.hasNext()) {
 				try {
 					Channel channel = itx.next();
-					ByteBuf buf = channel.alloc().buffer();
+					ByteBuf buf = channel.alloc().buffer(4096);
 					Encapsulator.encapsulatePacket(buf, packet);
-					channel.writeAndFlush(buf);
+					channel.writeAndFlush(buf).sync();
 				} catch (IOException ioex) {
 					ioex.printStackTrace();
+				} catch (InterruptedException interrupt) {
 				}
 			}
 		}

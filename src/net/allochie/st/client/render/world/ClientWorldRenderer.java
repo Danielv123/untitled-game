@@ -29,10 +29,13 @@ public class ClientWorldRenderer {
 			paintChunk(world, dirty);
 
 		Chunk gameChunk = world.getChunkFromBlockCoords((int) theGame.viewport.x, (int) theGame.viewport.y);
-		renderChunk(theGame.viewport, world, gameChunk);
-		Chunk[] neighborChunks = world.getAdjacentChunks(gameChunk);
-		for (int i = 0; i < neighborChunks.length; i++)
-			renderChunk(theGame.viewport, world, neighborChunks[i]);
+		if (gameChunk != null) {
+			renderChunk(theGame.viewport, world, gameChunk);
+			Chunk[] neighborChunks = world.getAdjacentChunks(gameChunk);
+			for (int i = 0; i < neighborChunks.length; i++)
+				if (neighborChunks[i] != null)
+					renderChunk(theGame.viewport, world, neighborChunks[i]);
+		}
 	}
 
 	private void paintChunk(World aworld, Chunk achunk) {
@@ -44,8 +47,8 @@ public class ClientWorldRenderer {
 				throw new RuntimeException("No render buffer free!");
 		}
 		int key = bufferMap.get(achunk);
+		System.out.println("paintChunk: " + achunk + ": " + key);
 		GL11.glNewList(glxListId + key, GL11.GL_COMPILE);
-
 		for (int x = 0; x < achunk.width; x++) {
 			for (int y = 0; y < achunk.height; y++) {
 				Block bz0 = achunk.getBlock(new Vector2(x, y));
@@ -53,7 +56,6 @@ public class ClientWorldRenderer {
 					ClientBlockRenderer.renderBlockInWorld(aworld, achunk, bz0, x, y);
 			}
 		}
-
 		GL11.glEndList();
 	}
 
@@ -66,9 +68,11 @@ public class ClientWorldRenderer {
 		return -1;
 	}
 
-	private void renderChunk(ClientViewport viewport, World aworld, Chunk achunk) {
-		if (!bufferMap.containsKey(achunk))
+	private void renderChunk(ClientViewport viewport, ClientWorld aworld, Chunk achunk) {
+		if (!bufferMap.containsKey(achunk)) {
+			aworld.markChunkForRepaint(achunk);
 			return;
+		}
 		int key = bufferMap.get(achunk);
 		GL11.glPushMatrix();
 		Vector2 coords = viewport.chunkCoordsToCamera(aworld, achunk);

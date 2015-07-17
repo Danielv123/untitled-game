@@ -9,15 +9,13 @@ import net.allochie.st.shared.world.ChunkCoord;
 
 public class S03BlockChange extends Packet {
 
-	public ChunkCoord chunk;
 	public int x, y;
 	public int block, blockData;
 
 	public S03BlockChange() {
 	}
 
-	public S03BlockChange(ChunkCoord chunk, int x, int y, int block, int blockData) {
-		this.chunk = chunk;
+	public S03BlockChange(int x, int y, int block, int blockData) {
 		this.x = x;
 		this.y = y;
 		this.block = block;
@@ -26,7 +24,6 @@ public class S03BlockChange extends Packet {
 
 	@Override
 	public void readPacket(ByteBuf buffer) throws IOException {
-		this.chunk = new ChunkCoord(buffer.readInt(), buffer.readInt());
 		this.x = buffer.readInt();
 		this.y = buffer.readInt();
 		this.block = buffer.readInt();
@@ -35,8 +32,6 @@ public class S03BlockChange extends Packet {
 
 	@Override
 	public void writePacket(ByteBuf buffer) throws IOException {
-		buffer.writeInt(chunk.x);
-		buffer.writeInt(chunk.y);
 		buffer.writeInt(x);
 		buffer.writeInt(y);
 		buffer.writeInt(block);

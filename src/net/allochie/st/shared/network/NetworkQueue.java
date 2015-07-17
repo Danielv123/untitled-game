@@ -12,11 +12,11 @@ public class NetworkQueue {
 
 	private static class QueuedPacket {
 		public final Packet packet;
-		public final WeakReference<ServerPlayer> player;
+		public final WeakReference<Player> player;
 
-		public QueuedPacket(Packet packet, ServerPlayer player) {
+		public QueuedPacket(Packet packet, Player player) {
 			this.packet = packet;
-			this.player = new WeakReference<ServerPlayer>(player);
+			this.player = new WeakReference<Player>(player);
 		}
 	}
 
@@ -32,7 +32,7 @@ public class NetworkQueue {
 		this.name = name;
 	}
 
-	public void queue(Packet packet, ServerPlayer player) {
+	public void queue(Packet packet, Player player) {
 		queue.offer(new QueuedPacket(packet, player));
 	}
 
@@ -42,7 +42,7 @@ public class NetworkQueue {
 		while (stack.hasNext()) {
 			try {
 				QueuedPacket obj = stack.next();
-				ServerPlayer player = obj.player.get();
+				Player player = obj.player.get();
 				if (player == null)
 					throw new NetworkException("Packet enqueued without player or with dead reference.");
 				Packet packet = obj.packet;

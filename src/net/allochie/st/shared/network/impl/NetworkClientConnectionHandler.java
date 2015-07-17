@@ -7,13 +7,16 @@ import net.allochie.st.shared.network.NetworkManager;
 import net.allochie.st.shared.network.Packet;
 import net.allochie.st.shared.network.packets.C00PlayerHandshake;
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 
-public class NetworkClientConnectionHandler extends ChannelInboundHandlerAdapter {
+public class NetworkClientConnectionHandler extends LengthFieldBasedFrameDecoder {
 	private final NetworkManager manager;
 
 	public NetworkClientConnectionHandler(NetworkManager manager) {
+		super(3 * 1024 * 1024, 0, 4, 0, 4);
 		this.manager = manager;
 	}
 
@@ -23,14 +26,16 @@ public class NetworkClientConnectionHandler extends ChannelInboundHandlerAdapter
 	}
 
 	@Override
-	public void channelRead(ChannelHandlerContext ctx, Object msg) {
-		try {
-			ByteBuf buffer = (ByteBuf) msg;
-			Packet packet = Encapsulator.deencapsulatePacket(buffer);
-			manager.clientQueue().queue(packet, manager.clientPlayer());
-		} catch (IOException ioex) {
-			ioex.printStackTrace();
-		}
+	protected Object decode(ChannelHandlerContext arg0, ByteBuf arg1) throws Exception {
+		ByteBuf frame = (ByteBuf) super.decode(arg0, arg1);
+		if (frame != null)
+			try {
+				Packet packet = Encapsulator.deencapsulatePacket(frame);
+				manager.clientQueue().queue(packet, manager.clientPlayer());
+			} catch (IOException ioex) {
+				ioex.printStackTrace();
+			}
+		return null;
 	}
 
 	@Override

@@ -15,6 +15,8 @@ public class Encapsulator {
 	public static Packet deencapsulatePacket(ByteBuf buffer) throws IOException {
 		String clazzName = (String) Packet.decodePrimitive(buffer);
 		try {
+			if (clazzName == null)
+				throw new IOException("No class specified!");
 			Class<? extends Packet> clazz = (Class<? extends Packet>) Class.forName(clazzName);
 			Packet packet = clazz.newInstance();
 			packet.readPacket(buffer.slice());

@@ -11,10 +11,12 @@ import net.allochie.st.client.ClientWorld;
 import net.allochie.st.client.render.strategy.StencilBufferStrategy;
 import net.allochie.st.client.render.texture.GLPNGTextureLoader;
 import net.allochie.st.client.render.world.ClientWorldRenderer;
+import net.allochie.st.shared.init.Blocks;
 import net.allochie.st.shared.math.AABB;
 import net.allochie.st.shared.math.Ray3;
 import net.allochie.st.shared.math.Vector3;
 import net.allochie.st.shared.render.ITexture;
+import net.allochie.st.shared.world.Block;
 
 public class RenderDispatcher {
 
@@ -37,11 +39,9 @@ public class RenderDispatcher {
 		GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT, GL11.GL_NICEST);
 
 		stencilBuffer = new StencilBufferStrategy(800, 600);
-		ITexture tex = null, tex2 = null;
 		try {
 			cursor = pngTextureLoader.getTexture("cursor.png");
-			tex = pngTextureLoader.getTexture("test.png");
-			tex2 = pngTextureLoader.getTexture("noidea.png");
+			Blocks.initBlocks(pngTextureLoader);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(0);

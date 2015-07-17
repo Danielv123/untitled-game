@@ -4,6 +4,7 @@ import net.allochie.st.shared.network.NetworkManager;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.codec.LengthFieldPrepender;
 
 public class NetworkServerConnectionInitializer extends ChannelInitializer<SocketChannel> {
 
@@ -16,6 +17,7 @@ public class NetworkServerConnectionInitializer extends ChannelInitializer<Socke
 	@Override
 	protected void initChannel(SocketChannel ch) throws Exception {
 		ChannelPipeline pipeline = ch.pipeline();
+		pipeline.addLast(new LengthFieldPrepender(4));
 		pipeline.addLast(new NetworkServerConnectionHandler(manager));
 	}
 

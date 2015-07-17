@@ -27,6 +27,10 @@ public class ClientWorld extends World {
 	@Override
 	public void markBlockForUpdate(int x, int y) {
 		Chunk chunk = getChunkFromBlockCoords(x, y);
+		markChunkForRepaint(chunk);
+	}
+
+	public void markChunkForRepaint(Chunk chunk) {
 		if (!dirtyChunks.contains(chunk))
 			dirtyChunks.add(chunk);
 	}

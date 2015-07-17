@@ -22,11 +22,12 @@ import java.util.Hashtable;
 import javax.swing.ImageIcon;
 
 import net.allochie.st.shared.render.ITexture;
+import net.allochie.st.shared.render.ITextureProvider;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
-public class GLPNGTextureLoader {
+public class GLPNGTextureLoader implements ITextureProvider {
 
 	private ColorModel glAlphaColorModel;
 	private ColorModel glColorModel;
@@ -130,5 +131,15 @@ public class GLPNGTextureLoader {
 		g.dispose();
 
 		return bufferedImage;
+	}
+
+	@Override
+	public ITexture loadTexture(String path) {
+		try {
+			return getTexture(path);
+		} catch (IOException ioex) {
+			ioex.printStackTrace();
+			return null;
+		}
 	}
 }
