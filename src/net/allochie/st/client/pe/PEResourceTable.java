@@ -68,12 +68,26 @@ public class PEResourceTable {
 		return (Short[]) typed.keySet().toArray(new Short[0]);
 	}
 
+	public byte[] getDataMap(short resourceType, short resourceId) throws FileNotFoundException {
+		Resource rsrc = resourceMap.get(resourceType).get(resourceId);
+		if (rsrc == null)
+			throw new FileNotFoundException("No resource " + resourceId + " under type " + resourceType);
+		return rsrc.data;
+	}
+
 	public InputStream getResourceStream(short resourceType, short resourceId) throws FileNotFoundException {
 		Resource rsrc = resourceMap.get(resourceType).get(resourceId);
 		if (rsrc == null)
 			throw new FileNotFoundException("No resource " + resourceId + " under type " + resourceType);
 		ByteArrayInputStream stream = new ByteArrayInputStream(rsrc.data);
 		return stream;
+	}
+
+	public int getResourceSize(short resourceType, short resourceId) throws FileNotFoundException {
+		Resource rsrc = resourceMap.get(resourceType).get(resourceId);
+		if (rsrc == null)
+			throw new FileNotFoundException("No resource " + resourceId + " under type " + resourceType);
+		return rsrc.length;
 	}
 
 	public short getResourceType(short resourceType, short resourceId) throws FileNotFoundException {

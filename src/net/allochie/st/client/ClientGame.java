@@ -1,6 +1,7 @@
 package net.allochie.st.client;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
@@ -11,14 +12,13 @@ import org.lwjgl.opengl.Util;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
+import net.allochie.st.client.pe.PEResourceExtractor;
 import net.allochie.st.client.render.IRenderContext;
 import net.allochie.st.client.render.RenderDispatcher;
 import net.allochie.st.client.screens.IScreen;
 import net.allochie.st.server.ServerGameSession;
-import net.allochie.st.shared.network.NetworkClient;
 import net.allochie.st.shared.network.NetworkManager;
 import net.allochie.st.shared.system.ThinkerThread;
-import net.allochie.st.shared.world.Block;
 import net.allochie.st.shared.world.provider.ChunkProviderClient;
 
 public class ClientGame implements IRenderContext {
@@ -39,6 +39,14 @@ public class ClientGame implements IRenderContext {
 
 	public ClientGame() {
 		try {
+
+			try {
+				new PEResourceExtractor(new File("binary/SIMTOWER.exe")).prepareAll();
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.exit(0);
+			}
+
 			this.thinkThread = new ThinkerThread();
 			thinkThread.startThread(false);
 

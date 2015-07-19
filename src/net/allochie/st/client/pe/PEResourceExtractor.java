@@ -32,10 +32,13 @@ public class PEResourceExtractor {
 				File which = new File("binary/src/" + namefile);
 				if (!which.getParentFile().exists())
 					which.getParentFile().mkdir();
-				FileOutputStream fos = new FileOutputStream(which);
-				passthroughStandard(resource, fos);
+				if (which.exists())
+					which.delete();
+				if (nameType == ResourceType.BITMAP)
+					passthroughBitmap(id, resource, new FileOutputStream(which));
+				else
+					passthroughStandard(resource, new FileOutputStream(which));
 				resource.close();
-				fos.close();
 			}
 		}
 	}
@@ -45,5 +48,12 @@ public class PEResourceExtractor {
 		int len;
 		while ((len = in.read(buffer)) != -1)
 			out.write(buffer, 0, len);
+		out.close();
+	}
+
+	private void passthroughBitmap(int bitmapid, InputStream in, OutputStream out) throws IOException {
+		out.write(new byte[] { 0x42, 0x4D, 0x0E, 0x0A, 0x00, 0x00, 0x00 });
+		out.write(new byte[] { 0x00, 0x00, 0x00, 0x36, 0x4, 0x00, 0x00 });
+		passthroughStandard(in, out);
 	}
 }
